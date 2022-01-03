@@ -5,6 +5,9 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {UserEntity} from "@app/users/entities/user.entity";
 import {Repository} from "typeorm";
 import { compare } from "bcrypt";
+import { sign } from "jsonwebtoken";
+import {JWT_SECRET} from "@app/config";
+import {AccessTokenInterface} from "@app/auth/types/access-token.interface";
 
 @Injectable()
 export class AuthService {
@@ -32,14 +35,14 @@ export class AuthService {
       errorResponse.errors['username'] = 'has already been taken';
     }
     if (userByEmail || userByUsername) {
-      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(errorResponse, HttpStatus.FORBIDDEN);
     }
     const newUser = new UserEntity();
     Object.assign(newUser, createUserDto);
     return await this.userRepository.save(newUser);
   }
 
-  async login(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto): Promise<AccessTokenInterface> {
     const errorResponse = {
       errors: {
         'email or password': 'is invalid',
@@ -67,6 +70,19 @@ export class AuthService {
     }
 
     delete user.password;
-    return user;
+    return {
+      accessToken: this.generateJwt(user)
+    }
+  }
+
+  generateJwt(user: UserEntity): string {
+    return sign(
+        {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        },
+        JWT_SECRET,
+    );
   }
 }
