@@ -1,30 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Injectable, Req } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {Repository} from "typeorm";
-import {UserEntity} from "@app/users/entities/user.entity";
-import {InjectRepository} from "@nestjs/typeorm";
+import { Like, Repository } from "typeorm";
+import { UserEntity } from '@app/users/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserRequestInterface } from '@app/users/types/user-request.interface';
+import { UserResponseInterface } from '@app/users/types/user-response.interface';
+import { UsersResponseInterface } from '@app/users/types/users-response.interface';
+import { UsersQueryParamsDto } from "@app/users/dto/users-query-params.dto";
 
 @Injectable()
 export class UsersService {
   constructor(
-      @InjectRepository(UserEntity)
-      private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+  findCurrent(@Req() req: UserRequestInterface): UserEntity {
+    return req.user;
   }
 
-  findCurrent() {
-    return 'This action adds find current';
-  }
-
-  findAll() {
-    return `This action returns all users`;
+  async findAll(
+    userQueryParamsDto: UsersQueryParamsDto,
+  ): Promise<UserEntity[]> {
+    const { username } = userQueryParamsDto;
+    const searchOptions = username ? { username: Like(`%${username}%`) } : null;
+    return await this.userRepository.find(searchOptions);
   }
 
   async findOne(id: number): Promise<UserEntity> {
-    return this.userRepository.findOne(id);
+    return await this.userRepository.findOne({ id: id });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
@@ -33,5 +37,13 @@ export class UsersService {
 
   removeCurrent(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  buildUserResponse(user: UserEntity): UserResponseInterface {
+    return { user: user };
+  }
+
+  buildUsersResponse(users: UserEntity[]): UsersResponseInterface {
+    return { users: users };
   }
 }

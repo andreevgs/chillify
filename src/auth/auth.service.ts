@@ -1,22 +1,22 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '@app/users/dto/create-user.dto';
-import { LoginUserDto } from "@app/users/dto/login-user.dto";
-import {InjectRepository} from "@nestjs/typeorm";
-import {UserEntity} from "@app/users/entities/user.entity";
-import {Repository} from "typeorm";
-import { compare } from "bcrypt";
-import { sign } from "jsonwebtoken";
-import {JWT_SECRET} from "@app/config";
-import {AccessTokenInterface} from "@app/auth/types/access-token.interface";
+import { LoginUserDto } from '@app/users/dto/login-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '@app/users/entities/user.entity';
+import { Repository } from 'typeorm';
+import { compare } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
+import { JWT_SECRET } from '@app/config';
+import { AccessTokenInterface } from '@app/auth/types/access-token.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-      @InjectRepository(UserEntity)
-      private readonly userRepository: Repository<UserEntity>
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     const errorResponse = {
       errors: {},
     };
@@ -50,10 +50,19 @@ export class AuthService {
     };
 
     const user = await this.userRepository.findOne(
-        {
-          email: loginUserDto.email,
-        },
-        { select: ['id', 'username', 'email', 'firstName', 'lastName', 'password'] },
+      {
+        email: loginUserDto.email,
+      },
+      {
+        select: [
+          'id',
+          'username',
+          'email',
+          'firstName',
+          'lastName',
+          'password',
+        ],
+      },
     );
 
     if (!user) {
@@ -61,8 +70,8 @@ export class AuthService {
     }
 
     const isPasswordCorrect = await compare(
-        loginUserDto.password,
-        user.password,
+      loginUserDto.password,
+      user.password,
     );
 
     if (!isPasswordCorrect) {
@@ -71,18 +80,18 @@ export class AuthService {
 
     delete user.password;
     return {
-      accessToken: this.generateJwt(user)
-    }
+      accessToken: this.generateAccessToken(user),
+    };
   }
 
-  generateJwt(user: UserEntity): string {
+  generateAccessToken(user: UserEntity): string {
     return sign(
-        {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        },
-        JWT_SECRET,
+      {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      },
+      JWT_SECRET,
     );
   }
 }
