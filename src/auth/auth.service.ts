@@ -6,7 +6,6 @@ import { UserEntity } from '@app/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { JWT_SECRET } from '@app/config';
 import { AccessTokenInterface } from '@app/auth/types/access-token.interface';
 
 @Injectable()
@@ -91,7 +90,7 @@ export class AuthService {
         username: user.username,
         email: user.email,
       },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
     );
   }
 }
