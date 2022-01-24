@@ -2,7 +2,7 @@
   "name": "chillify",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "andreevgs",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -19,12 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/ormconfig.ts",
-    "typeorm:prod": "node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./dist/ormconfig.js",
     "db:drop": "npm run typeorm schema:drop",
     "db:create": "npm run typeorm migration:generate -- -n",
-    "db:migrate": "npm run typeorm migration:run",
-    "db:migrate:prod": "npm run typeorm:prod migration:run",
-    "db:seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/ormseedconfig.ts migration:run"
+    "db:migrate": "typeorm --config dist/ormconfig.js migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.1",
