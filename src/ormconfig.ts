@@ -10,7 +10,7 @@ const config: ConnectionOptions = {
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
   ssl: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: !(process.env.NODE_ENV === 'production'),
   },
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
