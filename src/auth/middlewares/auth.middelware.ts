@@ -3,9 +3,7 @@ import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { UserRequestInterface } from '@app/users/types/user-request.interface';
 import { UsersService } from '@app/users/users.service';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { JWT_SECRET } from "@app/config";
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -21,7 +19,7 @@ export class AuthMiddleware implements NestMiddleware {
     const token = req.headers.authorization.split(' ')[1];
 
     try {
-      const decode = verify(token, process.env.JWT_SECRET);
+      const decode = verify(token, JWT_SECRET);
       const currentUser = await this.userService.findOne(decode['id']);
       req.user = currentUser;
       next();
