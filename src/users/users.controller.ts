@@ -8,14 +8,17 @@ import {
   Delete,
   Req,
   UseGuards, Query
-} from "@nestjs/common";
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRequestInterface } from '@app/users/types/user-request.interface';
 import { AuthGuard } from '@app/auth/guards/auth.guard';
 import { UsersResponseInterface } from '@app/users/types/users-response.interface';
 import { UserResponseInterface } from '@app/users/types/user-response.interface';
-import { UsersQueryParamsDto } from "@app/users/dto/users-query-params.dto";
+import { UsersQueryParamsDto } from '@app/users/dto/users-query-params.dto';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Controller('users')
 export class UsersController {
