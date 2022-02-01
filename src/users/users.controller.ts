@@ -16,9 +16,6 @@ import { AuthGuard } from '@app/auth/guards/auth.guard';
 import { UsersResponseInterface } from '@app/users/types/users-response.interface';
 import { UserResponseInterface } from '@app/users/types/user-response.interface';
 import { UsersQueryParamsDto } from '@app/users/dto/users-query-params.dto';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 @Controller('users')
 export class UsersController {

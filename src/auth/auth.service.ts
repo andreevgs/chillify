@@ -7,6 +7,9 @@ import { Repository } from 'typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { AccessTokenInterface } from '@app/auth/types/access-token.interface';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Injectable()
 export class AuthService {
